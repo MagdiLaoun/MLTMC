@@ -2,23 +2,24 @@
 * TMC.cpp - Implementation of TMC class for controlling TMC5160 stepper motor driver via SPI.
  * Created by Magdi Laoun, July 2025.
  */
-#include <TMC.h>
+#include <MLTMC.h>
 #include <SPI.h>
-TMC::TMC(uint8_t sck_, uint8_t  mosi_, uint8_t  miso_, uint8_t cs_, uint8_t en_) {
-    cs = cs_;
-    en = en_;
-    sck = sck_;
-    mosi = mosi_;
-    miso = miso_;
-    pinMode(cs, OUTPUT);
-    pinMode(en, OUTPUT);
-    digitalWrite(cs, HIGH);
-    digitalWrite(en, LOW);
-    SPI.begin(sck, miso, mosi);
-    SPI.setDataMode(SPI_MODE0);
+
+void TMC::begin(uint8_t sck_, uint8_t  mosi_, uint8_t  miso_, uint8_t cs_, uint8_t en_) {
+  cs = cs_;
+  en = en_;
+  sck = sck_;
+  mosi = mosi_;
+  miso = miso_;
+  pinMode(cs, OUTPUT);
+  pinMode(en, OUTPUT);
+  digitalWrite(cs, HIGH);
+  digitalWrite(en, LOW);
+  SPI.begin(sck, miso, mosi);
+  SPI.setDataMode(SPI_MODE0);
 }
-void TMC::init(float iHold_, float iRun_){
-  setConfiguration();
+void TMC::init(float iHold_, float iRun_, float mStep_) {
+  setConfiguration(mStep_);
   setCurrent(iHold_, iRun_);
   setRampMode(0);
   actualPosition(0);
@@ -56,8 +57,8 @@ void TMC::setTPowerDown(){
   uint8_t instruction = TPOWERDOWN | WRITE;
   transferData(instruction, value);
 }
-void TMC::setConfiguration() {
-    setChopConf(5);
+void TMC::setConfiguration(uint32_t mStep_) {
+    setChopConf(mStep_); //Set microstepping to 1/16
     setTPowerDown();
     setGlobalConf();
     setTimePwmThrs();
@@ -102,7 +103,7 @@ void TMC::setDecelerationMax(uint32_t value) {
   transferData(instruction, value);
 }
 void TMC::setSpeedStop() {
-  uint32_t value = 10;
+  uint32_t value = 100;
    uint8_t instruction = VSTOP | WRITE;
   transferData(instruction, value);
 }
@@ -128,7 +129,7 @@ void TMC::targetPosition(int32_t value) {
   data[4] = (value >> 0) & 0xFF;
   data[3] = (value >> 8) & 0xFF;
   data[2] = (value >> 16) & 0xFF;
-  data[1] = (value >> 24) & 0xFF;
+  data[1] = (value >> 24) & 0xFF; 
   data[0] = XTARGET | WRITE;
   digitalWrite(cs, LOW);
   SPI.transfer(data, 5);
