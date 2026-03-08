@@ -1,12 +1,32 @@
 {
+  "$schema": "https://raw.githubusercontent.com/platformio/platformio-core/develop/platformio/assets/schema/library.json",
   "name": "MLTMC",
-  "version": "1.0.0",
-  "date": "2025-07-19",
+  "version": "1.0.1",
   "description": "Library for controlling TMC stepper motor drivers",
+  "keywords": "stepper, motor, driver, TMC",
+  "homepage": "https://github.com/MagdiLaoun/MLTMC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MagdiLaoun/MLTMC.git"
+  },
   "authors": [
     {
       "name": "Magdi Laoun",
       "email": "magdi.laoun@gmail.com"
+    }
+  ],
+  "frameworks": [
+    "arduino", "espidf"
+  ],
+  "platforms": [
+    "espressif32"
+  ],
+  "headers": ["MLTMC.h"],
+  "examples": [
+    {
+      "name": "Readme",
+      "base": "",
+      "files": ["readme.md"]
     }
   ]
 }
